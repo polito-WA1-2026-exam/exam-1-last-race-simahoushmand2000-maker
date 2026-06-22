@@ -54,4 +54,4 @@
 * **Username:** player3 | **Password:** password
 
 ### AI Usage
-During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the React Single Page Application and configure the Node.js/Express backend. Specifically, the AI assisted in formatting the `GameLayout.jsx` state machine to manage the four game phases, writing the `fetch` API wrappers in `API.js`, and ensuring the Express session handling with Passport.js was correctly implemented according to course standards. All output was reviewed, tested, and integrated into my personal workspace.
+During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the project, resolve the bugs, and do the final touches to make the game look smoother.
