@@ -12,6 +12,9 @@ function GameLayout() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // --- MEMORIZATION TIMER STATE ---
+  const [setupTimeLeft, setSetupTimeLeft] = useState(10);
+
   // --- PLANNING STATE ---
   const [startStation, setStartStation] = useState(null);
   const [destStation, setDestStation] = useState(null);
@@ -44,6 +47,16 @@ function GameLayout() {
     fetchGameData();
   }, []);
 
+  // --- 10-SECOND MEMORIZATION TIMER EFFECT ---
+  useEffect(() => {
+    if (phase === 'SETUP' && setupTimeLeft > 0) {
+      const timer = setTimeout(() => setSetupTimeLeft(setupTimeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (phase === 'SETUP' && setupTimeLeft === 0) {
+      startPlanning(); // Auto-start when memorization time runs out!
+    }
+  }, [phase, setupTimeLeft]);
+
   // --- 90-SECOND TIMER EFFECT ---
   useEffect(() => {
     if (phase === 'PLANNING' && timeLeft > 0) {
@@ -68,6 +81,10 @@ function GameLayout() {
         });
       }
     });
+
+    // STRICT HINT COMPLIANCE: Shuffle the segments
+    segments.sort(() => Math.random() - 0.5); 
+
     setAvailableSegments(segments);
     
     // Assign Start and Destination
@@ -130,14 +147,21 @@ function GameLayout() {
       let currentCoins = coins;
       let logMessage = `Step ${currentStep + 1}: Traveled along ${seg.name}.`;
 
-      // 50% chance for a random event to occur
-      if (Math.random() < 0.5 && events.length > 0) {
-        const randomEvent = events[Math.floor(Math.random() * events.length)];
+      // STRICT HINT COMPLIANCE: Escalating bad luck after 4 stations
+      if (events.length > 0) {
+        let eventPool = events;
+        
+        // If they have traveled 4 stations, artificially increase the odds of bad events
+        if (currentStep >= 4) {
+          const badEvents = events.filter(e => parseInt(e.effect) < 0);
+          // Add bad events to the pool 3 extra times to drastically raise their probability
+          eventPool = [...events, ...badEvents, ...badEvents, ...badEvents];
+        }
+
+        const randomEvent = eventPool[Math.floor(Math.random() * eventPool.length)];
         const effectVal = parseInt(randomEvent.effect);
         currentCoins += effectVal;
         logMessage += ` EVENT: ${randomEvent.description} (${effectVal > 0 ? '+' : ''}${effectVal} coins).`;
-      } else {
-        logMessage += " No incidents.";
       }
 
       setCoins(currentCoins);
@@ -150,6 +174,7 @@ function GameLayout() {
 
   // --- RESULT & SAVE ---
   const endGame = async (finalScore) => {
+    setCoins(finalScore); // Forces the UI to show 0 if coins went negative
     setPhase('RESULT');
     setSavingScore(true);
     try {
@@ -166,6 +191,7 @@ function GameLayout() {
     setRoute([]);
     setExecutionLog([]);
     setTimeLeft(90);
+    setSetupTimeLeft(10); // Reset memorization timer
     setPhase('SETUP');
   };
 
@@ -173,12 +199,15 @@ function GameLayout() {
   if (loading) return <Container className="mt-5 text-center"><Spinner animation="border" /></Container>;
   if (error) return <Container className="mt-5"><Alert variant="danger">{error}</Alert></Container>;
 
-  // PHASE 1: SETUP (Same as before)
+  // PHASE 1: SETUP
   if (phase === 'SETUP') {
     return (
       <Container className="mt-4">
         <div className="text-center mb-4">
           <h2>Phase 1: Setup</h2>
+          <h3 className="text-danger fw-bold mt-2 mb-3">
+             <i className="bi bi-clock me-2"></i> Memorize the map! Auto-starting in: {setupTimeLeft}s
+          </h3>
           <h4><Badge bg="warning" text="dark">Starting Coins: {coins}</Badge></h4>
         </div>
         <Card className="shadow-sm mb-4 border-primary">
@@ -202,13 +231,13 @@ function GameLayout() {
           </Card.Body>
         </Card>
         <div className="text-center mt-4">
-          <Button size="lg" variant="success" onClick={startPlanning}>Start Planning Phase</Button>
+          <Button size="lg" variant="success" onClick={startPlanning}>I'm ready! Start Planning Phase</Button>
         </div>
       </Container>
     );
   }
 
-  // PHASE 2: PLANNING (Same as before)
+  // PHASE 2: PLANNING
   if (phase === 'PLANNING') {
     return (
       <Container className="mt-4">
@@ -300,7 +329,7 @@ function GameLayout() {
           <Card.Header className="bg-dark text-white">Travel Log</Card.Header>
           <ListGroup variant="flush" className="overflow-auto" style={{ maxHeight: '300px' }}>
             {executionLog.map((log, idx) => (
-              <ListGroup.Item key={idx} variant={log.includes('EVENT') ? 'warning' : log.includes('INVALID') ? 'danger' : ''}>
+              <ListGroup.Item key={idx} variant={log.includes('EVENT') && log.includes('-') ? 'danger' : log.includes('EVENT') ? 'warning' : log.includes('INVALID') ? 'danger' : ''}>
                 {log}
               </ListGroup.Item>
             ))}
