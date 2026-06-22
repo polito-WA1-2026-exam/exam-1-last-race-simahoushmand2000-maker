@@ -65,4 +65,8 @@
 * **Username:** player3 | **Password:** password
 
 ### AI Usage
+<<<<<<< HEAD
 During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the project, resolve the bugs, and do the final touches to make the game look smoother.
+=======
+During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the project, resolve the bugs, and do the final touches to make the game look smoother.
+>>>>>>> ac081de1c888109f0aa663edade69535d4c4b4dd
