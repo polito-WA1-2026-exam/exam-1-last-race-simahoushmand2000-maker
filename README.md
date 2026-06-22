@@ -42,11 +42,22 @@
 
 *(Replace the placeholder links below with the actual paths to your screenshots)*
 
-![Rankings Page](./ranking.png)
-*Screenshot 1: The general rankings page.*
+### Screenshots
 
-![Gameplay Execution](./path-to-your-gameplay-screenshot.png)
-*Screenshot 2: A player in the middle of the Execution phase.*
+*Screenshot 1: The Authentication Screen*
+![Login Screen](./Log%20in.png)
+
+*Screenshot 2: Phase 2 - Route Planning*
+![Planning Phase](./game%201.png)
+
+*Screenshot 3: Phase 3 - Route Execution & Events*
+![Execution Phase](./game%202.png)
+
+*Screenshot 4: Phase 4 - Final Score*
+![Game Over](./Game%20over.png)
+
+*Screenshot 5: Global Rankings Page*
+![Global Rankings](./Final%20result.png)
 
 ### Test Credentials
 * **Username:** player1 | **Password:** password
@@ -54,4 +65,4 @@
 * **Username:** player3 | **Password:** password
 
 ### AI Usage
-During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the React Single Page Application and configure the Node.js/Express backend. Specifically, the AI assisted in formatting the `GameLayout.jsx` state machine to manage the four game phases, writing the `fetch` API wrappers in `API.js`, and ensuring the Express session handling with Passport.js was correctly implemented according to course standards. All output was reviewed, tested, and integrated into my personal workspace.
+During the development of this project, I utilized an AI assistant (Google Gemini) to help structure the project, resolve the bugs, and do the final touches to make the game look smoother.
